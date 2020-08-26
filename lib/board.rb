@@ -10,4 +10,12 @@ class Board
       end
     end
   end
+
+  def valid_coordinate?(cell)
+    if @cells.has_key?(cell)
+      true
+    else
+      false
+    end
+  end
 end
