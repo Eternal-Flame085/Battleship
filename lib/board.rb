@@ -16,7 +16,28 @@ class Board
 
   def valid_placement?(ship, coordinates)
     return false if ship.length != coordinates.length
-    horizontal_and_vertical_validation?(coordinates[0], coordinates[-1], ship)
+
+    if horizontal_and_vertical_validation?(coordinates[0], coordinates[-1], ship)
+      overlaping_ship?(coordinates)
+    else
+      false
+    end
+  end
+
+  def overlaping_ship?(coordinates)
+    if coordinates.length == 2
+      if !@cells[coordinates[0]].empty? || !@cells[coordinates[1]].empty?
+        false
+      else
+        true
+      end
+    elsif coordinates.length == 3
+      if !@cells[coordinates[0]].empty? || !@cells[coordinates[1]].empty? || !@cells[coordinates[2]].empty?
+        false
+      else
+        true
+      end
+    end
   end
 
   def place(ship, coordinates)
