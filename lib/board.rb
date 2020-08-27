@@ -9,7 +9,6 @@ class Board
         @cells["#{letter + number.to_s}"] = Cell.new("#{letter + number.to_s}")
       end
     end
-
   end
 
   def valid_coordinate?(cell)
@@ -20,12 +19,11 @@ class Board
     end
   end
 
- def valid_placement?(ship, coordinates)
-
-   return false if ship.length != coordinates.length
-   horizontal_and_vertical_validation(coordinates[0], coordinates[-1], ship) == true
-    end
+  def valid_placement?(ship, coordinates)
+    return false if ship.length != coordinates.length
+    horizontal_and_vertical_validation(coordinates[0], coordinates[-1], ship) == true
   end
+
 
   def horizontal_and_vertical_validation(coord1, coord2, ship)
     valid_coords = []
@@ -41,3 +39,4 @@ class Board
       valid_coords.include? coordinate_array
     end
   end
+end
