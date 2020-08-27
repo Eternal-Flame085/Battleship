@@ -31,12 +31,11 @@ class Board
       horizontal_placement = ("1".."4")
       coordinate_array = (coord1[1]..coord2[1]).to_a
       horizontal_placement.each_cons(ship.length) {|consecutive_numbers| valid_coords << consecutive_numbers}
-      valid_coords.include? coordinate_array
     elsif coord1[1] == coord2[1]
       vertical_placement = ("A".."D")
       coordinate_array = (coord1[0]..coord2[0]).to_a
       vertical_placement.each_cons(ship.length) {|consecutive_letters| valid_coords << consecutive_letters}
-      valid_coords.include? coordinate_array
     end
+    valid_coords.include? coordinate_array
   end
 end
