@@ -11,11 +11,11 @@ class CellTest < Minitest::Test
     assert_instance_of Cell, cell
   end
 
-  def  test_checks_variables_are_readable
-     cell = Cell.new("B4")
+  def test_checks_variables_are_readable
+    cell = Cell.new("B4")
 
-     assert_equal "B4", cell.coordinate
-     assert_nil cell.ship
+    assert_equal "B4", cell.coordinate
+    assert_nil cell.ship
   end
 
   def test_if_cell_is_empty?
