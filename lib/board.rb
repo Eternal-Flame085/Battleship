@@ -54,17 +54,18 @@ class Board
   end
 
   def render(show_ships = false)
-    counter = 0
-    final_string = "  1 2 3 4\n"
-    
+    counter = 4
+    final_string = "  1 2 3 4"
+
     @cells.values.each do |cell|
-      final_string =  "#{final_string}" + "#{cell.render(show_ships)} "
-      counter += 1
       if counter == 4
-        final_string = "#{final_string}\n"
+        final_string = "#{final_string} \n#{cell.coordinate[0]}"
         counter = 0
       end
+      final_string =  "#{final_string}" + " " + "#{cell.render(show_ships)}"
+      counter += 1
     end
-    final_string
+    final_string = "#{final_string} \n"
+
   end
 end
