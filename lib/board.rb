@@ -14,29 +14,22 @@ class Board
     @cells.has_key?(cell)
   end
 
-  def valid_placement?(ship, coordinates)
-    return false if ship.length != coordinates.length
-
-    if horizontal_and_vertical_validation?(coordinates[0], coordinates[-1], ship)
-      overlaping_ship?(coordinates)
-    else
-      false
+  def  valid_coordinates(coordinates)
+    coordinates.each do |coord|
+      return false if valid_coordinate?(coord) == false
     end
   end
 
+  def valid_placement?(ship, coordinates)
+    return false if valid_coordinates(coordinates) == false
+    return false if ship.length != coordinates.length
+    return false if overlaping_ship?(coordinates) == false
+    horizontal_and_vertical_validation?(coordinates[0], coordinates[-1], ship)
+  end
+
   def overlaping_ship?(coordinates)
-    if coordinates.length == 2
-      if !@cells[coordinates[0]].empty? || !@cells[coordinates[1]].empty?
-        false
-      else
-        true
-      end
-    elsif coordinates.length == 3
-      if !@cells[coordinates[0]].empty? || !@cells[coordinates[1]].empty? || !@cells[coordinates[2]].empty?
-        false
-      else
-        true
-      end
+    coordinates.each do |coord|
+      return false if @cells[coord].empty? != true
     end
   end
 
