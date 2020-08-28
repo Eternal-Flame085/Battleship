@@ -98,7 +98,6 @@ class BoardTest < Minitest::Test
   end
 
   def test_board_renders
-    skip
     board = Board.new
     cruiser = Ship.new("Cruiser", 3)
 
