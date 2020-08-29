@@ -22,25 +22,33 @@ class Setup
     require "pry";binding.pry
   end
 
-  def computer_ship_placement
+  def computer_ship_placement(ship = 3)
     randomizer = rand(2)
     if randomizer == 0
-      letter = ("A".."D").to_a.sample
-      collector_for_each_cons = []
-      horizontal_computer_placement = ("#{letter}1".."#{letter}4")
-      horizontal_computer_placement.each_cons(3){|consecutive_numbers| collector_for_each_cons << consecutive_numbers}
-      return collector_for_each_cons[rand(collector_for_each_cons.length)]
+      horiztonal_coordinate_array(ship)
     elsif randomizer == 1
-      number = ("1".."4").to_a.sample
-      collector_for_each_cons = []
-      vertical_computer_placement = ("A".."D")
-      vertical_computer_placement.each_cons(3){|consecutive_letters| collector_for_each_cons << consecutive_letters}
-      letter_coordinates = collector_for_each_cons[rand(collector_for_each_cons.length)]
-
-      letter_coordinates.length.times do |counter|
-        letter_coordinates[counter].insert(-1,number)
-      end
-      return letter_coordinates
+      vertical_coordinate_array(ship)
     end
+  end
+
+  def horiztonal_coordinate_array(ship)
+    letter = ("A".."D").to_a.sample
+    collector_for_each_cons = []
+    horizontal_computer_placement = ("#{letter}1".."#{letter}4")
+    horizontal_computer_placement.each_cons(ship){|consecutive_numbers| collector_for_each_cons << consecutive_numbers}
+    return collector_for_each_cons[rand(collector_for_each_cons.length)]
+  end
+#ship should be ship.length when finalized and default value should just be ship
+  def vertical_coordinate_array
+    number = ("1".."4").to_a.sample
+    collector_for_each_cons = []
+    vertical_computer_placement = ("A".."D")
+    vertical_computer_placement.each_cons(ship){|consecutive_letters| collector_for_each_cons << consecutive_letters}
+    letter_coordinates = collector_for_each_cons[rand(collector_for_each_cons.length)]
+
+    letter_coordinates.length.times do |counter|
+      letter_coordinates[counter].insert(-1,number)
+    end
+    return letter_coordinates
   end
 end
