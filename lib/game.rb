@@ -7,14 +7,15 @@ class Game
     @player_board = Board.new
     @computer_board = Board.new
     @ship_hash = {2 => "submarine", 3 => "cruiser"}
+    @computer_ship_array = generate_ships(@ship_hash)
+    @player_ship_array = generate_ships(@ship_hash)
+    @winner = false
     main_menu
   end
 
   def game_setup
-    computer_ship_array = generate_ships(@ship_hash)
-    player_ship_array = generate_ships(@ship_hash)
-    computer_place_ship(computer_ship_array)
-    player_place_ship(player_ship_array)
+    computer_place_ship(@computer_ship_array)
+    player_place_ship(@player_ship_array)
     play_game
   end
 
@@ -63,9 +64,7 @@ class Game
     exit if user_input == "q"
     if user_input == "p"
       game_setup
-      puts "I am here"
     end
-    puts "I am out here"
   end
 
   def turn
@@ -73,8 +72,17 @@ class Game
     puts @computer_board.render(true)
     puts "==============PLAYER BOARD=============="
     puts @player_board.render(true)
-    player_shot
     computer_shot
+    return nil if winner_validation? == true
+    player_shot
+    return nil if winner_validation? == true
+  end
+
+  def winner_validation?
+    if player_lost? == true || computer_lost? == true
+      @winner = true
+      return true
+    end
   end
 
   def player_shot
@@ -115,8 +123,44 @@ class Game
   end
 
   def play_game
-    2.times do
+    while @winner == false
       turn
+    end
+    if player_lost? == true
+      puts "I won"
+    else
+      puts "You won"
+    end
+    main_menu
+  end
+
+  def player_lost?
+    total_ships = @player_ship_array.length
+    sunken_ships = 0
+    @player_ship_array.each do |ship|
+      if ship.sunk?
+        sunken_ships += 1
+      end
+    end
+    if sunken_ships == total_ships
+      return true
+    else
+      false
+    end
+  end
+
+  def computer_lost?
+    total_ships = @computer_ship_array.length
+    sunken_ships = 0
+    @computer_ship_array.each do |ship|
+      if ship.sunk?
+        sunken_ships += 1
+      end
+    end
+    if sunken_ships == total_ships
+      return true
+    else
+      false
     end
   end
 
