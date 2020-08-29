@@ -15,7 +15,6 @@ class Game
     player_ship_array = generate_ships(@ship_hash)
     computer_place_ship(computer_ship_array)
     player_place_ship(player_ship_array)
-    puts @computer_board.render(true)
   end
 
   def generate_ships(ship_hash)
@@ -27,7 +26,19 @@ class Game
   end
 
   def player_place_ship(ship_array)
-
+    puts "I have laid out my ships on the grid."
+    puts "You now need to lay out your two ships."
+    puts "The Cruiser is three units long and the Submarine is two units long."
+    ship_array.each do |ship|
+      puts @player_board.render(true)
+      puts "Enter the squares for the #{ship.name} (#{ship.length} spaces)"
+      player_input = gets.chomp.upcase.split(" ").to_a
+      while @player_board.valid_placement?(ship, player_input) == false
+        puts "Those are invalid coordinates. Please try again: (ex: A1 A2 A3)"
+        player_input = gets.chomp.upcase.split(" ").to_a
+      end
+      @player_board.place(ship, player_input)
+    end
   end
 
   def computer_place_ship(ship_array)
