@@ -1,5 +1,3 @@
-require "./lib/setup"
+require "./lib/game"
 
-setup = Setup.new
-
-setup.play_game
+game = Game.new
