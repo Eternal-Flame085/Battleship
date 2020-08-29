@@ -25,6 +25,11 @@ class Cell
     @cell_fired_upon
   end
 
+  def ship_sunk?
+    @ship.sunk?
+  end
+
+
   def render(render_ship = false)
     if !empty? && render_ship == true
       "S"
