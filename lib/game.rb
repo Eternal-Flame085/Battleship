@@ -15,6 +15,7 @@ class Game
     player_ship_array = generate_ships(@ship_hash)
     computer_place_ship(computer_ship_array)
     player_place_ship(player_ship_array)
+    play_game
   end
 
   def generate_ships(ship_hash)
@@ -67,8 +68,56 @@ class Game
     puts "I am out here"
   end
 
+  def turn
+    puts "=============COMPUTER BOARD============="
+    puts @computer_board.render(true)
+    puts "==============PLAYER BOARD=============="
+    puts @player_board.render(true)
+    player_shot
+    computer_shot
+  end
+
+  def player_shot
+    puts "Enter the coordinate for your shot:"
+    player_input = gets.chomp.upcase
+    while @computer_board.valid_coordinate?(player_input) == false || @computer_board.board_fired_upon?(player_input) == true
+      if @computer_board.board_fired_upon?(player_input) == true
+        puts "Please select new coordinates: These coordinates have already been fired upon"
+        player_input = gets.chomp.upcase
+      else
+        puts "Please enter a valid coordinate:"
+        player_input = gets.chomp.upcase
+      end
+    end
+    @computer_board.board_fire_upon(player_input)
+    if @computer_board.cells[player_input].empty?
+        puts "Your shot on #{player_input} was a miss"
+    elsif @computer_board.cells[player_input].ship_sunk?
+        puts "Your shot hit and sunk a ship"
+    else
+        puts "Your shot on #{player_input} was a hit"
+    end
+  end
+
+  def computer_shot
+    random_computer_shot = @player_board.cells.keys.sample
+    while @player_board.board_fired_upon?(random_computer_shot)
+      random_computer_shot = @player_board.cells.keys.sample
+    end
+    @player_board.board_fire_upon(random_computer_shot)
+    if @player_board.cells[random_computer_shot].empty?
+      puts "My shot on #{random_computer_shot} was a miss"
+    elsif @player_board.cells[random_computer_shot].ship_sunk?
+      puts "My shot hit and sunk a ship"
+    else
+      puts "My shot on #{random_computer_shot} was a hit"
+    end
+  end
+
   def play_game
-    computer_ship_placement
+    2.times do
+      turn
+    end
   end
 
   def computer_ship_coordinates(ship)

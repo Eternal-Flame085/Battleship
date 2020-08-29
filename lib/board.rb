@@ -39,6 +39,15 @@ class Board
     end
   end
 
+  def board_fire_upon(coordinate)
+    @cells[coordinate].fire_upon
+  end
+
+  def board_fired_upon?(coordinate)
+    @cells[coordinate].fired_upon?
+
+  end
+
   def horizontal_and_vertical_validation?(coord1, coord2, ship)
     valid_coords = []
     if coord1[0] == coord2[0]
