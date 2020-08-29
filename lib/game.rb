@@ -75,6 +75,8 @@ class Game
     puts @player_board.render(true)
     player_shot
     puts @computer_board.render
+    computer_shot
+    puts @player_board.render
   end
 
   def player_shot
@@ -88,7 +90,11 @@ class Game
   end
 
   def computer_shot
-
+    random_computer_shot = @player_board.cells.keys.sample
+    while @player_board.board_fired_upon?(random_computer_shot)
+      random_computer_shot = @player_board.cells.keys.sample
+    end
+    @player_board.board_fire_upon(random_computer_shot)
   end
 
   def play_game
