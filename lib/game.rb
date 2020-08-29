@@ -15,6 +15,7 @@ class Game
     player_ship_array = generate_ships(@ship_hash)
     computer_place_ship(computer_ship_array)
     player_place_ship(player_ship_array)
+    play_game
   end
 
   def generate_ships(ship_hash)
@@ -67,8 +68,31 @@ class Game
     puts "I am out here"
   end
 
+  def turn
+    puts "=============COMPUTER BOARD============="
+    puts @computer_board.render(true)
+    puts "==============PLAYER BOARD=============="
+    puts @player_board.render(true)
+    player_shot
+    puts @computer_board.render
+  end
+
+  def player_shot
+    puts "Enter the coordinate for your shot:"
+    player_input = gets.chomp.upcase
+    while @computer_board.valid_coordinate?(player_input) == false
+      puts "Please enter a valid coordinate:"
+      player_input = gets.chomp.upcase
+    end
+    @computer_board.board_fire_upon(player_input)
+  end
+
+  def computer_shot
+
+  end
+
   def play_game
-    computer_ship_placement
+    turn
   end
 
   def computer_ship_coordinates(ship)
