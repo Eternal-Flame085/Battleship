@@ -29,7 +29,6 @@ class Cell
     @ship.sunk?
   end
 
-
   def render(render_ship = false)
     if !empty? && render_ship == true
       "S"
