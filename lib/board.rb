@@ -2,7 +2,10 @@ class Board
   attr_reader :cells
   def initialize
     @cells = Hash.new
+    generate_board
+  end
 
+  def generate_board
     ("A".."D").each do |letter|
       (1..4).each do |number|
         @cells["#{letter + number.to_s}"] = Cell.new("#{letter + number.to_s}")
@@ -45,7 +48,6 @@ class Board
 
   def board_fired_upon?(coordinate)
     @cells[coordinate].fired_upon?
-
   end
 
   def horizontal_and_vertical_validation?(coord1, coord2, ship)
@@ -65,7 +67,6 @@ class Board
   def render(show_ships = false)
     counter = 4
     final_string = "  1 2 3 4"
-
     @cells.values.each do |cell|
       if counter == 4
         final_string = "#{final_string} \n#{cell.coordinate[0]}"
@@ -75,6 +76,5 @@ class Board
       counter += 1
     end
     final_string = "#{final_string} \n"
-
   end
 end

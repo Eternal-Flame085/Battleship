@@ -13,10 +13,45 @@ class Game
     main_menu
   end
 
+  def main_menu
+    user_input = ""
+    puts "Welcome to BATTLESHIP"
+    loop do
+      puts "Enter p to play. Enter q to quit."
+      user_input = gets.chomp.downcase
+      break if user_input == "p" || user_input == "q"
+    end
+    exit if user_input == "q"
+    if user_input == "p"
+      game_setup
+    end
+  end
+
   def game_setup
     computer_place_ship(@computer_ship_array)
     player_place_ship(@player_ship_array)
     play_game
+  end
+
+  def play_game
+    while @winner == false
+      turn
+    end
+    if player_lost? == true
+      puts "I won"
+    else
+      puts "You won"
+    end
+    main_menu
+  end
+
+  def turn
+    puts `clear`
+    render_boards
+    player_shot
+    return nil if winner_validation? == true
+    computer_shot
+    return nil if winner_validation? == true
   end
 
   def generate_ships(ship_hash)
@@ -28,6 +63,7 @@ class Game
   end
 
   def player_place_ship(ship_array)
+    puts `clear`
     puts "I have laid out my ships on the grid."
     puts "You now need to lay out your two ships."
     puts "The Cruiser is three units long and the Submarine is two units long."
@@ -53,29 +89,11 @@ class Game
     end
   end
 
-  def main_menu
-    user_input = ""
-    puts "Welcome to BATTLESHIP"
-    loop do
-      puts "Enter p to play. Enter q to quit."
-      user_input = gets.chomp.downcase
-      break if user_input == "p" || user_input == "q"
-    end
-    exit if user_input == "q"
-    if user_input == "p"
-      game_setup
-    end
-  end
-
-  def turn
+  def render_boards
     puts "=============COMPUTER BOARD============="
-    puts @computer_board.render(true)
+    puts @computer_board.render
     puts "==============PLAYER BOARD=============="
     puts @player_board.render(true)
-    computer_shot
-    return nil if winner_validation? == true
-    player_shot
-    return nil if winner_validation? == true
   end
 
   def winner_validation?
@@ -88,16 +106,28 @@ class Game
   def player_shot
     puts "Enter the coordinate for your shot:"
     player_input = gets.chomp.upcase
-    while @computer_board.valid_coordinate?(player_input) == false || @computer_board.board_fired_upon?(player_input) == true
+    while @computer_board.valid_coordinate?(player_input) == false
+      puts "Please enter a valid coordinate:"
+      player_input = gets.chomp.upcase
       if @computer_board.board_fired_upon?(player_input) == true
         puts "Please select new coordinates: These coordinates have already been fired upon"
-        player_input = gets.chomp.upcase
-      else
-        puts "Please enter a valid coordinate:"
         player_input = gets.chomp.upcase
       end
     end
     @computer_board.board_fire_upon(player_input)
+    turn_outcome_player(player_input)
+  end
+
+  def computer_shot
+    random_computer_shot = @player_board.cells.keys.sample
+    while @player_board.board_fired_upon?(random_computer_shot)
+      random_computer_shot = @player_board.cells.keys.sample
+    end
+    @player_board.board_fire_upon(random_computer_shot)
+    turn_outcome_computer(random_computer_shot)
+  end
+
+  def turn_outcome_player(player_input)
     if @computer_board.cells[player_input].empty?
         puts "Your shot on #{player_input} was a miss"
     elsif @computer_board.cells[player_input].ship_sunk?
@@ -107,12 +137,7 @@ class Game
     end
   end
 
-  def computer_shot
-    random_computer_shot = @player_board.cells.keys.sample
-    while @player_board.board_fired_upon?(random_computer_shot)
-      random_computer_shot = @player_board.cells.keys.sample
-    end
-    @player_board.board_fire_upon(random_computer_shot)
+  def turn_outcome_computer(random_computer_shot)
     if @player_board.cells[random_computer_shot].empty?
       puts "My shot on #{random_computer_shot} was a miss"
     elsif @player_board.cells[random_computer_shot].ship_sunk?
@@ -120,18 +145,6 @@ class Game
     else
       puts "My shot on #{random_computer_shot} was a hit"
     end
-  end
-
-  def play_game
-    while @winner == false
-      turn
-    end
-    if player_lost? == true
-      puts "I won"
-    else
-      puts "You won"
-    end
-    main_menu
   end
 
   def player_lost?
@@ -143,7 +156,7 @@ class Game
       end
     end
     if sunken_ships == total_ships
-      return true
+      true
     else
       false
     end
@@ -158,7 +171,7 @@ class Game
       end
     end
     if sunken_ships == total_ships
-      return true
+      true
     else
       false
     end
@@ -187,7 +200,6 @@ class Game
     vertical_computer_placement = ("A".."D")
     vertical_computer_placement.each_cons(ship.length){|consecutive_letters| collector_for_each_cons << consecutive_letters}
     letter_coordinates = collector_for_each_cons[rand(collector_for_each_cons.length)]
-
     letter_coordinates.length.times do |counter|
       letter_coordinates[counter].insert(-1,number)
     end
