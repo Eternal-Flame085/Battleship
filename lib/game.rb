@@ -46,12 +46,30 @@ class Game
   end
 
   def turn
-    puts `clear`
     render_boards
     player_shot
     return nil if winner_validation? == true
     computer_shot
     return nil if winner_validation? == true
+  end
+
+  def player_shot
+    puts "Enter the coordinate for your shot:"
+    player_input = gets.chomp.upcase
+    while @computer_board.valid_coordinate?(player_input) == false || @computer_board.board_fired_upon?(player_input) == true
+      player_input = player_shot_validation(player_input)
+    end
+    @computer_board.board_fire_upon(player_input)
+    turn_outcome_player(player_input)
+  end
+
+  def computer_shot
+    random_computer_shot = @player_board.cells.keys.sample
+    while @player_board.board_fired_upon?(random_computer_shot)
+      random_computer_shot = @player_board.cells.keys.sample
+    end
+    @player_board.board_fire_upon(random_computer_shot)
+    turn_outcome_computer(random_computer_shot)
   end
 
   def generate_ships(ship_hash)
@@ -103,28 +121,14 @@ class Game
     end
   end
 
-  def player_shot
-    puts "Enter the coordinate for your shot:"
-    player_input = gets.chomp.upcase
-    while @computer_board.valid_coordinate?(player_input) == false
+  def player_shot_validation(player_input)
+    if @computer_board.board_fired_upon?(player_input) == true
+      puts "Please select new coordinates: These coordinates have already been fired upon"
+      player_input = gets.chomp.upcase
+    elsif @computer_board.valid_coordinate?(player_input) == false
       puts "Please enter a valid coordinate:"
       player_input = gets.chomp.upcase
-      if @computer_board.board_fired_upon?(player_input) == true
-        puts "Please select new coordinates: These coordinates have already been fired upon"
-        player_input = gets.chomp.upcase
-      end
     end
-    @computer_board.board_fire_upon(player_input)
-    turn_outcome_player(player_input)
-  end
-
-  def computer_shot
-    random_computer_shot = @player_board.cells.keys.sample
-    while @player_board.board_fired_upon?(random_computer_shot)
-      random_computer_shot = @player_board.cells.keys.sample
-    end
-    @player_board.board_fire_upon(random_computer_shot)
-    turn_outcome_computer(random_computer_shot)
   end
 
   def turn_outcome_player(player_input)
