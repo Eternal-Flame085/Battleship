@@ -109,4 +109,22 @@ class BoardTest < Minitest::Test
     assert_equal expected, board.render
     assert_equal expected_2, board.render(true)
   end
+
+  def test_if_board_can_call_fired_upon
+    board = Board.new
+
+    assert_equal false, board.board_fired_upon?("B3")
+
+    board.cells["B3"].fire_upon
+    assert_equal true, board.board_fired_upon?("B3")
+  end
+
+  def test_if_board_can_call_fire_upon
+    board = Board.new
+
+    assert_equal false, board.board_fired_upon?("B3")
+
+    board.board_fire_upon("B3")
+    assert_equal true, board.board_fired_upon?("B3")
+  end
 end
