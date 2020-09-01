@@ -30,8 +30,8 @@ class Game
   end
 
   def generate_game
-    variable_ships
     board_size
+    variable_ships
     @player_board = Board.new(@board_size)
     @computer_board = Board.new(@board_size)
     @computer_ship_array = generate_ships(@ship_hash)
@@ -61,30 +61,30 @@ class Game
     @ship_hash = {"submarine" => 2, "cruiser" => 3}
     puts `clear`
     puts "Would you like to play with custom ships?"
+    puts "Default ships are a submarine and cruiser"
     puts "Enter Y for yes, anything else and you will play with default ships"
     yes_no = gets.chomp.upcase
+
     if yes_no == "Y"
-      puts "Default ships are a submarine and cruiser"
-      puts "What ships do you want to play with?"
-      puts "Please enter the name of your ship"
-      name_of_ship= gets.chomp
-      puts "Please enter the length of your ship"
+      variable_ships_helper
+    end
+  end
+
+  def variable_ships_helper
+    puts "What ships do you want to play with?"
+    puts "Please enter the name of your ship"
+    name_of_ship= gets.chomp
+    puts "Please enter the length of your ship (Max: #{@board_size})"
+    length_of_ship = gets.chomp.to_i
+    while length_of_ship > @board_size do
+      puts "Length of ship must be smaller than #{@board_size}"
       length_of_ship = gets.chomp.to_i
-      @ship_hash = {name_of_ship => length_of_ship}
-      puts "Would you like to create more ships? Enter y for yes and n for no"
-      more_ships = gets.chomp.upcase
-      if more_ships == "Y"
-        loop do
-          puts "Please enter the name of your ship"
-          name_of_ship= gets.chomp
-          puts "Please enter the length of your ship"
-          length_of_ship = gets.chomp.to_i
-          @ship_hash[name_of_ship] = length_of_ship
-          puts "Would you like to create more ships? Enter y for yes and n for no"
-          more_ships = gets.chomp.downcase
-          break if more_ships == "n"
-        end
-      end
+    end
+    @ship_hash = {name_of_ship => length_of_ship}
+    puts "Would you like to create more ships? Enter y for yes and n for no"
+    more_ships = gets.chomp.upcase
+    if more_ships == "Y"
+      variable_ships_helper
     end
   end
 
