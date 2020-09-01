@@ -1,6 +1,7 @@
 require "./lib/board"
 require "./lib/ship"
 require "./lib/cell"
+require "./lib/computer"
 
 class Game
   attr_reader :ship_hash, :computer_ship_array
@@ -24,7 +25,8 @@ class Game
 
   def game_setup
     generate_game
-    computer_place_ship(@computer_ship_array)
+    @computer.computer_place_ship
+    #computer_place_ship(@computer_ship_array)
     player_place_ship(@player_ship_array)
     play_game
   end
@@ -33,10 +35,33 @@ class Game
     board_size
     variable_ships
     @player_board = Board.new(@board_size)
-    @computer_board = Board.new(@board_size)
-    @computer_ship_array = generate_ships(@ship_hash)
+    @computer = Computer.new(@board_size, @ship_hash)
+
+    #@computer_board = Board.new(@board_size)
+    #@computer_ship_array = generate_ships(@ship_hash)
     @player_ship_array = generate_ships(@ship_hash)
     @winner = false
+  end
+
+  def play_game
+    while @winner == false
+      turn
+    end
+    if player_lost? == true
+      puts "I won"
+    else
+      puts "You won"
+    end
+    main_menu
+  end
+
+  def turn
+    render_boards
+    player_shot
+    return nil if winner_validation? == true
+    #@player_board will be @player.board
+    @computer.computer_shot(@player_board)
+    return nil if winner_validation? == true
   end
 
   def board_size
@@ -88,45 +113,28 @@ class Game
     end
   end
 
-  def play_game
-    while @winner == false
-      turn
-    end
-    if player_lost? == true
-      puts "I won"
-    else
-      puts "You won"
-    end
-    main_menu
-  end
-
-  def turn
-    render_boards
-    player_shot
-    return nil if winner_validation? == true
-    computer_shot
-    return nil if winner_validation? == true
-  end
-
   def player_shot
+    @valid = false
     puts "Enter the coordinate for your shot:"
     player_input = gets.chomp.upcase
-    while @computer_board.valid_coordinate?(player_input) == false || @computer_board.board_fired_upon?(player_input) == true
+    while @valid == false
       player_input = player_shot_validation(player_input)
     end
-    @computer_board.board_fire_upon(player_input)
+    @computer.board.board_fire_upon(player_input)
     turn_outcome_player(player_input)
   end
 
-  def computer_shot
-    random_computer_shot = @player_board.cells.keys.sample
-    while @player_board.board_fired_upon?(random_computer_shot)
-      random_computer_shot = @player_board.cells.keys.sample
-    end
-    @player_board.board_fire_upon(random_computer_shot)
-    turn_outcome_computer(random_computer_shot)
-  end
+  # def computer_shot
+  #   random_computer_shot = @player_board.cells.keys.sample
+  #   while @player_board.board_fired_upon?(random_computer_shot)
+  #     random_computer_shot = @player_board.cells.keys.sample
+  #   end
+  #   @player_board.board_fire_upon(random_computer_shot)
+  #   turn_outcome_computer(random_computer_shot)
+  # end
+  #
 
+  #Computer has it
   def generate_ships(ship_hash)
     ship_collector = []
     @ship_hash.each do |name, length|
@@ -155,59 +163,64 @@ class Game
     end
   end
 
-  def computer_place_ship(ship_array)
-    ship_array.each  do |ship|
-      ship_coordinates = computer_ship_coordinates(ship)
-      while @computer_board.valid_placement?(ship, ship_coordinates) == false
-        ship_coordinates = computer_ship_coordinates(ship)
-      end
-      @computer_board.place(ship, ship_coordinates)
-    end
-  end
+  # def computer_place_ship(ship_array)
+  #   ship_array.each  do |ship|
+  #     ship_coordinates = computer_ship_coordinates(ship)
+  #     while @computer_board.valid_placement?(ship, ship_coordinates) == false
+  #       ship_coordinates = computer_ship_coordinates(ship)
+  #     end
+  #     @computer_board.place(ship, ship_coordinates)
+  #   end
+  # end
 
   def render_boards
     puts "=============COMPUTER BOARD============="
-    puts @computer_board.render
+    puts @computer.board.render
     puts "==============PLAYER BOARD=============="
     puts @player_board.render(true)
   end
 
   def winner_validation?
-    if player_lost? == true || computer_lost? == true
+    if player_lost? || @computer.computer_lost?
       @winner = true
       return true
     end
   end
 
   def player_shot_validation(player_input)
-    if @computer_board.board_fired_upon?(player_input) == true
-      puts "Please select new coordinates: These coordinates have already been fired upon"
-      player_input = gets.chomp.upcase
-    elsif @computer_board.valid_coordinate?(player_input) == false
+    if @computer.board.valid_coordinate?(player_input) == true
+      if @computer.board.board_fired_upon?(player_input) == true
+        puts "Please select new coordinates: These coordinates have already been fired upon"
+        player_input = gets.chomp.upcase
+      else
+        @valid = true
+        player_input
+      end
+    elsif @computer.board.valid_coordinate?(player_input) == false
       puts "Please enter a valid coordinate:"
       player_input = gets.chomp.upcase
     end
   end
 
   def turn_outcome_player(player_input)
-    if @computer_board.cells[player_input].empty?
+    if @computer.board.cells[player_input].empty?
         puts "Your shot on #{player_input} was a miss"
-    elsif @computer_board.cells[player_input].ship_sunk?
+    elsif @computer.board.cells[player_input].ship_sunk?
         puts "Your shot hit and sunk a ship"
     else
         puts "Your shot on #{player_input} was a hit"
     end
   end
 
-  def turn_outcome_computer(random_computer_shot)
-    if @player_board.cells[random_computer_shot].empty?
-      puts "My shot on #{random_computer_shot} was a miss"
-    elsif @player_board.cells[random_computer_shot].ship_sunk?
-      puts "My shot hit and sunk a ship"
-    else
-      puts "My shot on #{random_computer_shot} was a hit"
-    end
-  end
+  # def turn_outcome_computer(random_computer_shot)
+  #   if @player_board.cells[random_computer_shot].empty?
+  #     puts "My shot on #{random_computer_shot} was a miss"
+  #   elsif @player_board.cells[random_computer_shot].ship_sunk?
+  #     puts "My shot hit and sunk a ship"
+  #   else
+  #     puts "My shot on #{random_computer_shot} was a hit"
+  #   end
+  # end
 
   def player_lost?
     total_ships = @player_ship_array.length
@@ -224,47 +237,47 @@ class Game
     end
   end
 
-  def computer_lost?
-    total_ships = @computer_ship_array.length
-    sunken_ships = 0
-    @computer_ship_array.each do |ship|
-      if ship.sunk?
-        sunken_ships += 1
-      end
-    end
-    if sunken_ships == total_ships
-      true
-    else
-      false
-    end
-  end
+  # def computer_lost?
+  #   total_ships = @computer_ship_array.length
+  #   sunken_ships = 0
+  #   @computer_ship_array.each do |ship|
+  #     if ship.sunk?
+  #       sunken_ships += 1
+  #     end
+  #   end
+  #   if sunken_ships == total_ships
+  #     true
+  #   else
+  #     false
+  #   end
+  # end
 
-  def computer_ship_coordinates(ship)
-    randomizer = rand(2)
-    if randomizer == 0
-      horizontal_coordinate_array(ship)
-    elsif randomizer == 1
-      vertical_coordinate_array(ship)
-    end
-  end
-
-  def horizontal_coordinate_array(ship)
-    letter = ("A".."#{(65 + (@board_size - 1)).chr}").to_a.sample
-    collector_for_each_cons = []
-    horizontal_computer_placement = ("#{letter}1".."#{letter}#{@board_size}")
-    horizontal_computer_placement.each_cons(ship.length){|consecutive_numbers| collector_for_each_cons << consecutive_numbers}
-    return collector_for_each_cons[rand(collector_for_each_cons.length)]
-  end
-
-  def vertical_coordinate_array(ship)
-    number = ("1".."#{@board_size}").to_a.sample
-    collector_for_each_cons = []
-    vertical_computer_placement = ("A".."#{(65 + (@board_size - 1)).chr}")
-    vertical_computer_placement.each_cons(ship.length){|consecutive_letters| collector_for_each_cons << consecutive_letters}
-    letter_coordinates = collector_for_each_cons[rand(collector_for_each_cons.length)]
-    letter_coordinates.length.times do |counter|
-      letter_coordinates[counter].insert(-1,number)
-    end
-    return letter_coordinates
-  end
+  # def computer_ship_coordinates(ship)
+  #   randomizer = rand(2)
+  #   if randomizer == 0
+  #     horizontal_coordinate_array(ship)
+  #   elsif randomizer == 1
+  #     vertical_coordinate_array(ship)
+  #   end
+  # end
+  #
+  # def horizontal_coordinate_array(ship)
+  #   letter = ("A".."#{(65 + (@board_size - 1)).chr}").to_a.sample
+  #   collector_for_each_cons = []
+  #   horizontal_computer_placement = ("#{letter}1".."#{letter}#{@board_size}")
+  #   horizontal_computer_placement.each_cons(ship.length){|consecutive_numbers| collector_for_each_cons << consecutive_numbers}
+  #   return collector_for_each_cons[rand(collector_for_each_cons.length)]
+  # end
+  #
+  # def vertical_coordinate_array(ship)
+  #   number = ("1".."#{@board_size}").to_a.sample
+  #   collector_for_each_cons = []
+  #   vertical_computer_placement = ("A".."#{(65 + (@board_size - 1)).chr}")
+  #   vertical_computer_placement.each_cons(ship.length){|consecutive_letters| collector_for_each_cons << consecutive_letters}
+  #   letter_coordinates = collector_for_each_cons[rand(collector_for_each_cons.length)]
+  #   letter_coordinates.length.times do |counter|
+  #     letter_coordinates[counter].insert(-1,number)
+  #   end
+  #   return letter_coordinates
+  # end
 end
