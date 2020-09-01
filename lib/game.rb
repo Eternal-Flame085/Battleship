@@ -4,12 +4,6 @@ require "./lib/cell"
 
 class Game
   def initialize
-    @player_board = Board.new
-    @computer_board = Board.new
-    @ship_hash = {2 => "submarine", 3 => "cruiser"}
-    @computer_ship_array = generate_ships(@ship_hash)
-    @player_ship_array = generate_ships(@ship_hash)
-    @winner = false
     main_menu
   end
 
@@ -28,9 +22,38 @@ class Game
   end
 
   def game_setup
+    generate_game
     computer_place_ship(@computer_ship_array)
     player_place_ship(@player_ship_array)
     play_game
+  end
+
+  def generate_game
+    board_size
+    @player_board = Board.new(@board_size)
+    @computer_board = Board.new(@board_size)
+    @ship_hash = {2 => "submarine", 3 => "cruiser"}
+    @computer_ship_array = generate_ships(@ship_hash)
+    @player_ship_array = generate_ships(@ship_hash)
+    @winner = false
+  end
+
+  def board_size
+    @board_size = 4
+    puts `clear`
+    puts "Would you like to play on a cutom size board?"
+    puts "Enter Y for yes, anything else and it defaults to a 4x4"
+    yes_no = gets.chomp.upcase
+    if yes_no == "Y"
+      puts "Default board size is 4x4"
+      puts "what board size do you want to play with?"
+      puts "Ex: an input of 6 will generate a 6x6 board (Max:10)"
+      @board_size = gets.chomp.to_i
+      while @board_size > 10 || @board_size < 3 do
+        puts "Board size cant be smaller than a 3x3 or bigger than a 10x10"
+        @board_size = gets.chomp.to_i
+      end
+    end
   end
 
   def play_game
@@ -191,17 +214,17 @@ class Game
   end
 
   def horiztonal_coordinate_array(ship)
-    letter = ("A".."D").to_a.sample
+    letter = ("A".."#{(65 + (@board_size - 1)).chr}").to_a.sample
     collector_for_each_cons = []
-    horizontal_computer_placement = ("#{letter}1".."#{letter}4")
+    horizontal_computer_placement = ("#{letter}1".."#{letter}#{@board_size}")
     horizontal_computer_placement.each_cons(ship.length){|consecutive_numbers| collector_for_each_cons << consecutive_numbers}
     return collector_for_each_cons[rand(collector_for_each_cons.length)]
   end
 
   def vertical_coordinate_array(ship)
-    number = ("1".."4").to_a.sample
+    number = ("1".."#{@board_size}").to_a.sample
     collector_for_each_cons = []
-    vertical_computer_placement = ("A".."D")
+    vertical_computer_placement = ("A".."#{(65 + (@board_size - 1)).chr}")
     vertical_computer_placement.each_cons(ship.length){|consecutive_letters| collector_for_each_cons << consecutive_letters}
     letter_coordinates = collector_for_each_cons[rand(collector_for_each_cons.length)]
     letter_coordinates.length.times do |counter|
