@@ -3,6 +3,7 @@ require "./lib/ship"
 require "./lib/cell"
 
 class Game
+  attr_reader :ship_hash, :computer_ship_array
   def initialize
     main_menu
   end
@@ -29,10 +30,10 @@ class Game
   end
 
   def generate_game
+    variable_ships
     board_size
     @player_board = Board.new(@board_size)
     @computer_board = Board.new(@board_size)
-    @ship_hash = {2 => "submarine", 3 => "cruiser"}
     @computer_ship_array = generate_ships(@ship_hash)
     @player_ship_array = generate_ships(@ship_hash)
     @winner = false
@@ -52,6 +53,37 @@ class Game
       while @board_size > 10 || @board_size < 3 do
         puts "Board size cant be smaller than a 3x3 or bigger than a 10x10"
         @board_size = gets.chomp.to_i
+      end
+    end
+  end
+
+  def variable_ships
+    @ship_hash = {"submarine" => 2, "cruiser" => 3}
+    puts `clear`
+    puts "Would you like to play with custom ships?"
+    puts "Enter Y for yes, anything else and you will play with default ships"
+    yes_no = gets.chomp.upcase
+    if yes_no == "Y"
+      puts "Default ships are a submarine and cruiser"
+      puts "What ships do you want to play with?"
+      puts "Please enter the name of your ship"
+      name_of_ship= gets.chomp
+      puts "Please enter the length of your ship"
+      length_of_ship = gets.chomp.to_i
+      @ship_hash = {name_of_ship => length_of_ship}
+      puts "Would you like to create more ships? Enter y for yes and n for no"
+      more_ships = gets.chomp.upcase
+      if more_ships == "Y"
+        loop do
+          puts "Please enter the name of your ship"
+          name_of_ship= gets.chomp
+          puts "Please enter the length of your ship"
+          length_of_ship = gets.chomp.to_i
+          @ship_hash[name_of_ship] = length_of_ship
+          puts "Would you like to create more ships? Enter y for yes and n for no"
+          more_ships = gets.chomp.downcase
+          break if more_ships == "n"
+        end
       end
     end
   end
@@ -97,7 +129,7 @@ class Game
 
   def generate_ships(ship_hash)
     ship_collector = []
-    @ship_hash.each do |length, name|
+    @ship_hash.each do |name, length|
       ship_collector << Ship.new(name, length)
     end
     ship_collector
@@ -106,8 +138,11 @@ class Game
   def player_place_ship(ship_array)
     puts `clear`
     puts "I have laid out my ships on the grid."
-    puts "You now need to lay out your two ships."
-    puts "The Cruiser is three units long and the Submarine is two units long."
+    puts "You now need to lay out your #{@ship_hash.length} ships."
+      ship_string = @ship_hash.map do |key, value|
+      "The #{key} is #{value} units long"
+    end
+      puts ship_string
     ship_array.each do |ship|
       puts @player_board.render(true)
       puts "Enter the squares for the #{ship.name} (#{ship.length} spaces)"
@@ -207,13 +242,13 @@ class Game
   def computer_ship_coordinates(ship)
     randomizer = rand(2)
     if randomizer == 0
-      horiztonal_coordinate_array(ship)
+      horizontal_coordinate_array(ship)
     elsif randomizer == 1
       vertical_coordinate_array(ship)
     end
   end
 
-  def horiztonal_coordinate_array(ship)
+  def horizontal_coordinate_array(ship)
     letter = ("A".."#{(65 + (@board_size - 1)).chr}").to_a.sample
     collector_for_each_cons = []
     horizontal_computer_placement = ("#{letter}1".."#{letter}#{@board_size}")
