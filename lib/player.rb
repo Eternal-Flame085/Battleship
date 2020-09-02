@@ -43,7 +43,7 @@ class Player
       player_input = player_shot_validation(player_input, computer_board)
     end
     computer_board.board_fire_upon(player_input)
-    turn_outcome_player(player_input, computer_board)
+    puts turn_outcome_player(player_input, computer_board)
   end
 
   def player_shot_validation(player_input, computer_board)
@@ -63,11 +63,11 @@ class Player
 
   def turn_outcome_player(player_input, computer_board)
     if computer_board.cells[player_input].empty?
-        puts "Your shot on #{player_input} was a miss"
+        return "Your shot on #{player_input} was a miss"
     elsif computer_board.cells[player_input].ship_sunk?
-        puts "Your shot hit and sunk a ship"
+        return "Your shot hit and sunk a ship"
     else
-        puts "Your shot on #{player_input} was a hit"
+        return "Your shot on #{player_input} was a hit"
     end
   end
 
