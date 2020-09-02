@@ -1,5 +1,6 @@
 class Computer
-  attr_reader :board, :ship_array, :board_size 
+  attr_reader :ship_array, :board_size
+  attr_accessor :board
   def initialize(board_size, ship_hash)
     @board_size = board_size
     @board = Board.new(board_size)
