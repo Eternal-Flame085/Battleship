@@ -31,16 +31,16 @@ class Computer
       random_computer_shot = player_board.cells.keys.sample
     end
     player_board.board_fire_upon(random_computer_shot)
-    turn_outcome_computer(random_computer_shot, player_board)
+    puts turn_outcome_computer(random_computer_shot, player_board)
   end
 
   def turn_outcome_computer(random_computer_shot, player_board)
     if player_board.cells[random_computer_shot].empty?
-      puts "My shot on #{random_computer_shot} was a miss"
+      return  "My shot on #{random_computer_shot} was a miss"
     elsif player_board.cells[random_computer_shot].ship_sunk?
-      puts "My shot hit and sunk a ship"
+      return "My shot hit and sunk a ship"
     else
-      puts "My shot on #{random_computer_shot} was a hit"
+      return "My shot on #{random_computer_shot} was a hit"
     end
   end
 
