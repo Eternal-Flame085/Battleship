@@ -87,6 +87,7 @@ class Game
     yes_no = gets.chomp.upcase
 
     if yes_no == "Y"
+      @ship_hash.clear
       variable_ships_helper
     end
   end
@@ -101,7 +102,7 @@ class Game
       puts "Length of ship must be smaller than #{@board_size}"
       length_of_ship = gets.chomp.to_i
     end
-    @ship_hash = {name_of_ship => length_of_ship}
+    @ship_hash[name_of_ship] = length_of_ship
     puts "Would you like to create more ships? Enter y for yes and n for no"
     more_ships = gets.chomp.upcase
     if more_ships == "Y"
